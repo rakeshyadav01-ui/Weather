@@ -18,7 +18,7 @@ app.use(express.json());
 
 
 // Test whether the Netlify Function is working.
-app.get("/api/health", (req, res) => {
+app.get("/health", (req, res) => {
   res.json({
     ok: true,
     service: "SkyCast Weather Dashboard"
@@ -27,9 +27,9 @@ app.get("/api/health", (req, res) => {
 
 
 // Get weather information for a location.
-app.get("/api/weather", async (req, res) => {
+app.get("/weather", async (req, res) => {
   try {
-    // Get the location from the URL.
+    // Get the location from the URL query.
     const location = String(req.query.location || "").trim();
 
     // Get the number of forecast days.
@@ -38,14 +38,14 @@ app.get("/api/weather", async (req, res) => {
       3
     );
 
-    // Check whether the API key exists.
+    // Check whether the WeatherAPI key exists.
     if (!API_KEY) {
       return res.status(500).json({
         error: "WEATHER_API_KEY is missing."
       });
     }
 
-    // Check whether a location was provided.
+    // Check whether the user provided a location.
     if (!location) {
       return res.status(400).json({
         error: "Location is required."
@@ -61,10 +61,10 @@ app.get("/api/weather", async (req, res) => {
       `&aqi=yes` +
       `&alerts=yes`;
 
-    // Request weather data from WeatherAPI.
+    // Send the request to WeatherAPI.
     const response = await fetch(url);
 
-    // Convert the response to JSON.
+    // Convert the WeatherAPI response into JSON.
     const data = await response.json();
 
     // Handle WeatherAPI errors.
@@ -74,14 +74,14 @@ app.get("/api/weather", async (req, res) => {
       });
     }
 
-    // Send weather data to the frontend.
+    // Send the weather data back to the frontend.
     res.json(data);
 
   } catch (error) {
     // Print the error in the Netlify logs.
     console.error("Weather error:", error);
 
-    // Send an error response.
+    // Send an error response to the frontend.
     res.status(500).json({
       error: "Unable to fetch weather data."
     });
@@ -90,12 +90,12 @@ app.get("/api/weather", async (req, res) => {
 
 
 // Search locations for autocomplete.
-app.get("/api/search", async (req, res) => {
+app.get("/search", async (req, res) => {
   try {
-    // Get the search text.
+    // Get the search text from the URL query.
     const query = String(req.query.query || "").trim();
 
-    // Check whether the API key exists.
+    // Check whether the WeatherAPI key exists.
     if (!API_KEY) {
       return res.status(500).json({
         error: "WEATHER_API_KEY is missing."
@@ -113,10 +113,10 @@ app.get("/api/search", async (req, res) => {
       `?key=${encodeURIComponent(API_KEY)}` +
       `&q=${encodeURIComponent(query)}`;
 
-    // Request location data from WeatherAPI.
+    // Send the request to WeatherAPI.
     const response = await fetch(url);
 
-    // Convert the response to JSON.
+    // Convert the response into JSON.
     const data = await response.json();
 
     // Handle WeatherAPI errors.
@@ -126,14 +126,14 @@ app.get("/api/search", async (req, res) => {
       });
     }
 
-    // Send the search results to the frontend.
+    // Send the search results back to the frontend.
     res.json(data);
 
   } catch (error) {
     // Print the error in the Netlify logs.
     console.error("Search error:", error);
 
-    // Send an error response.
+    // Send an error response to the frontend.
     res.status(500).json({
       error: "Unable to search locations."
     });
