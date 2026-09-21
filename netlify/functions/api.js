@@ -1,15 +1,15 @@
-// Test whether Netlify is deploying this Function.
-exports.handler = async function () {
-  return {
-    statusCode: 200,
-
-    headers: {
-      "Content-Type": "application/json"
-    },
-
-    body: JSON.stringify({
+// Netlify Function test endpoint.
+export default async function () {
+  return new Response(
+    JSON.stringify({
       ok: true,
       message: "SkyCast Netlify Function is working"
-    })
-  };
-};
+    }),
+    {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  );
+}
