@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SkyCast — Weather Intelligence</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="container nav">
+
+    <div class="brand">
+      <span class="brand-icon">☁</span>
+      <span>SkyCast</span>
+    </div>
+
+    <div class="nav-actions">
+      <button id="unitToggle" class="icon-btn">°C</button>
+      <button id="themeToggle" class="icon-btn">☀</button>
+    </div>
+
+  </div>
+</header>
+
+<main class="container">
+
+<section class="hero">
+
+  <div class="hero-text">
+
+    <div class="eyebrow">
+      WEATHER INTELLIGENCE
+    </div>
+
+    <h1>
+      Know the sky<br>
+      <span>before you step<br>outside.</span>
+    </h1>
+
+    <p>
+      Live conditions, detailed forecasts, air quality
+      and practical weather insights in one dashboard.
+    </p>
+
+  </div>
+
+  <div class="search-card">
+
+    <form id="searchForm">
+
+      <div class="search-row">
+
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Search city..."
+          autocomplete="off"
+        >
+
+        <button
+          type="submit"
+          id="searchBtn"
+        >
+          Search
+        </button>
+
+        <button
+          type="button"
+          id="locationBtn"
+          class="small-btn"
+          title="Use my location"
+        >
+          ⌖
+        </button>
+
+      </div>
+
+      <div id="suggestions" class="suggestions"></div>
+
+    </form>
+
+  </div>
+
+</section>
+
+<div id="error" class="error" hidden></div>
+
+<div id="loading" class="loading" hidden>
+  Loading weather...
+</div>
+
+<section id="dashboard" hidden>
+
+  <div class="location-header">
+
+    <div>
+      <h2 id="locationName">—</h2>
+      <p id="locationMeta">—</p>
+    </div>
+
+    <div class="location-actions">
+
+      <span id="updatedAt"></span>
+
+      <button
+        id="favoriteBtn"
+        class="favorite-btn"
+        title="Add to favorites"
+      >
+        ☆
+      </button>
+
+    </div>
+
+  </div>
+
+  <section class="weather-layout">
+
+    <div class="current-card card">
+
+      <div class="live">
+        ● Live
+      </div>
+
+      <div class="temp-row">
+
+        <div>
+
+          <div class="temperature">
+            <span id="currentTemp">—</span>
+          </div>
+
+          <div id="feelsLike" class="muted">
+            Feels like —
+          </div>
+
+          <div class="high-low">
+
+            <span id="highTemp">
+              High —
+            </span>
+
+            <span id="lowTemp">
+              Low —
+            </span>
+
+          </div>
+
+        </div>
+
+        <div class="condition">
+
+          <img
+            id="currentIcon"
+            src=""
+            alt=""
+          >
+
+          <strong id="currentCondition">
+            —
+          </strong>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="metrics">
+
+      <div class="metric card">
+        <span>💧 Humidity</span>
+        <strong id="humidity">—</strong>
+      </div>
+
+      <div class="metric card">
+        <span>💨 Wind</span>
+        <strong id="wind">—</strong>
+      </div>
+
+      <div class="metric card">
+        <span>👁 Visibility</span>
+        <strong id="visibility">—</strong>
+      </div>
+
+      <div class="metric card">
+        <span>☀ UV Index</span>
+        <strong id="uv">—</strong>
+      </div>
+
+      <div class="metric card">
+        <span>◉ Pressure</span>
+        <strong id="pressure">—</strong>
+      </div>
+
+      <div class="metric card">
+        <span>🌧 Precipitation</span>
+        <strong id="precipitation">—</strong>
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="grid-two">
+
+    <div class="panel card">
+
+      <div class="section-label">
+        FORECAST
+      </div>
+
+      <h3>
+        Next 3 days
+      </h3>
+
+      <div
+        id="forecastGrid"
+        class="forecast-grid"
+      ></div>
+
+    </div>
+
+    <div class="panel card chart-panel">
+
+      <div class="section-label">
+        HOURLY
+      </div>
+
+      <h3>
+        Temperature trend
+      </h3>
+
+      <div class="chart-wrap">
+        <canvas id="weatherChart"></canvas>
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="grid-three">
+
+    <div class="panel card">
+
+      <div class="section-label">
+        AIR & HEALTH
+      </div>
+
+      <h3>
+        Air quality
+      </h3>
+
+      <div class="aq-grid">
+
+        <div>
+          <span>PM2.5</span>
+          <strong id="pm25">—</strong>
+        </div>
+
+        <div>
+          <span>PM10</span>
+          <strong id="pm10">—</strong>
+        </div>
+
+        <div>
+          <span>O₃</span>
+          <strong id="o3">—</strong>
+        </div>
+
+        <div>
+          <span>NO₂</span>
+          <strong id="no2">—</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel card">
+
+      <div class="section-label">
+        SUN & MOON
+      </div>
+
+      <h3>
+        Daylight
+      </h3>
+
+      <div class="sun-grid">
+
+        <div>
+          <span>🌅 Sunrise</span>
+          <strong id="sunrise">—</strong>
+        </div>
+
+        <div>
+          <span>🌇 Sunset</span>
+          <strong id="sunset">—</strong>
+        </div>
+
+      </div>
+
+      <div class="daylight">
+        <div></div>
+      </div>
+
+      <strong id="daylight">—</strong>
+
+    </div>
+
+    <div class="panel card">
+
+      <div class="section-label">
+        PRACTICAL
+      </div>
+
+      <h3>
+        Weather tips
+      </h3>
+
+      <div id="weatherTips"></div>
+
+    </div>
+
+  </section>
+
+  <section class="panel card alerts-panel">
+
+    <div class="section-label">
+      ALERTS
+    </div>
+
+    <h3>
+      Weather alerts
+    </h3>
+
+    <div id="alerts"></div>
+
+  </section>
+
+</section>
+
+<section id="emptyState" class="empty-state">
+
+  <div class="empty-icon">
+    ☼
+  </div>
+
+  <h2>
+    Search for a location
+  </h2>
+
+  <p>
+    Search any city to see live weather information.
+  </p>
+
+</section>
+
+<footer>
+  <span>
+    SkyCast • HTML • CSS • JavaScript • Node.js • Express • WeatherAPI
+  </span>
+
+  <span>
+    Resume-ready weather dashboard
+  </span>
+</footer>
+
+</main>
+
+<script src="app.js"></script>
+
+</body>
+</html>
